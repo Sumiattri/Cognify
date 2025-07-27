@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --watch index.js",
+    "dev-worker": "node --watch worker.js"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.3.49",
+    "@langchain/core": "^0.3.66",
+    "@langchain/openai": "^0.6.3",
+    "@langchain/qdrant": "^0.1.2",
+    "@langchain/textsplitters": "^0.1.0",
+    "@qdrant/qdrant-js": "^1.15.0",
+    "bullmq": "^5.56.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "langchain": "^0.3.30",
+    "multer": "^2.0.2",
+    "pdf-parse": "^1.1.1",
+    "@huggingface/inference": "^4.5.3",
+    "dotenv": "^17.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.1.0"
+  }
+}
