@@ -1,59 +1,3 @@
-// import { FiUpload } from "react-icons/fi";
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// const UploadPage = () => {
-//   const [selectedFile, setSelectedFile] = useState(null);
-//   const [uploading, setUploading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const navigate = useNavigate();
-
-//   function handleFileUpload() {
-//     const el = document.createElement("input");
-//     el.setAttribute("type", "file");
-//     el.setAttribute("accept", "application/pdf");
-//     el.addEventListener("change", async (e) => {
-//       if (el.files && el.files.length > 0) {
-//         const file = el.files[0];
-//         if (file) {
-//           const formData = new FormData();
-//           formData.append("pdf", file);
-
-//           await fetch("http://localhost:8000/upload/pdf", {
-//             method: "POST",
-//             body: formData,
-//           });
-//           console.log("file uploaded");
-//         }
-//       }
-//     });
-//     el.click();
-//   }
-//   return (
-//     <div className="h-screen w-screen flex items-center justify-center bg-[#F3F4F6] cursor-pointer">
-//       <div
-//         onClick={handleFileUpload}
-//         className="sm:h-70 h-60 sm:w-95 w-80 shadow-[0_0_10px_rgba(0,0,0,0.1)] bg-[#FFFFFF] rounded-2xl flex flex-col gap-6 items-center sm:pt-13 pt-10"
-//       >
-//         <div className="bg-[#FAF5FF] rounded-full p-5">
-//           <FiUpload className="text-4xl text-[#9334E9]" />
-//         </div>
-//         <div>
-//           <p className="font-semibold sm:text-[22px] text-[18px] text-center">
-//             Upload PDF to start chatting
-//           </p>
-//           <p className="text-center sm:text-[17px] text-[15px] text-[#6B7280]">
-//             Click or drag and drop your file here
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default UploadPage;
-
-// src/pages/UploadPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -80,10 +24,13 @@ function UploadPage() {
     formData.append("pdf", selectedFile);
 
     try {
-      const response = await fetch("http://localhost:8000/upload/pdf", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "https://notebooklm-6hyr.onrender.com/upload/pdf",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

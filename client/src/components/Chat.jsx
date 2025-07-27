@@ -49,7 +49,9 @@ function Chat({ viewerRef }) {
     setChatHistory((prev) => [...prev, { sender: "user", text: message }]);
     try {
       setLoadingResponse(true);
-      const res = await fetch(`http://localhost:8000/chat?message=${message}`);
+      const res = await fetch(
+        `https://notebooklm-6hyr.onrender.com/chat?message=${message}`
+      );
       const data = await res.json();
       console.log(data);
 

@@ -13,7 +13,7 @@ function ViewPDF({ uploadedFilename, originalFileName, viewerRef }) {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const pdfUrl = uploadedFilename
-    ? `http://localhost:8000/pdfs/${uploadedFilename}`
+    ? `https://notebooklm-6hyr.onrender.com/pdfs/${uploadedFilename}`
     : "";
 
   useEffect(() => {
