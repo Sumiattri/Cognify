@@ -4,7 +4,7 @@ import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/
 // import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { QdrantClient } from "@qdrant/qdrant-js";
 import IORedis from "ioredis";
-import { PDFLoader } from "@langchain/community/document_loaders/web/pdf";
+import { PDFLoader } from "@langchain/community/document_loaders/pdf";
 
 import dotenv from "dotenv";
 dotenv.config();
