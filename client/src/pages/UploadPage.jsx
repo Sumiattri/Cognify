@@ -25,7 +25,7 @@ function UploadPage() {
 
     try {
       const response = await fetch(
-        "https://notebooklm-6hyr.onrender.com/uploads/pdf",
+        "https://notebooklm-6hyr.onrender.com/upload/pdf",
         {
           method: "POST",
           body: formData,
