@@ -56,7 +56,7 @@ const worker = new Worker(
       console.log("Loading PDF from path:", data.path);
       //Load the pdf
       // const loader = new PDFLoader(data.path);
-      const loader = new PDFLoader(data.cloudinaryUrl);
+      const loader = new PDFLoader(cloudinaryUrl);
       const docs = await loader.load();
       console.log(`Loaded ${docs.length} documents from PDF`);
 
