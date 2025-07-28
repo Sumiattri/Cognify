@@ -1,6 +1,5 @@
 import { Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
-import { usePDFViewer } from "@react-pdf-viewer/core";
 import { useEffect } from "react";
 import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -12,9 +11,10 @@ function ViewPDF({ uploadedFilename, originalFileName, viewerRef }) {
 
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
-  const pdfUrl = uploadedFilename
-    ? `https://notebooklm-6hyr.onrender.com/pdfs/${uploadedFilename}`
-    : "";
+  // const pdfUrl = uploadedFilename
+  //   ? `https://notebooklm-6hyr.onrender.com/pdfs/${uploadedFilename}`
+  //   : "";
+  const pdfUrl = uploadedFilename || "";
 
   useEffect(() => {
     if (viewerRef) {

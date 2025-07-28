@@ -20,12 +20,14 @@
     "@langchain/textsplitters": "^0.1.0",
     "@qdrant/qdrant-js": "^1.15.0",
     "bullmq": "^5.56.7",
+    "cloudinary": "^1.41.3",
     "concurrently": "^9.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "langchain": "^0.3.30",
     "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
     "pdf-parse": "^1.1.1"
   },
   "devDependencies": {

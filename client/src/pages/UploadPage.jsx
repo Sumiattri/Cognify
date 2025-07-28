@@ -35,15 +35,14 @@ function UploadPage() {
       if (response.ok) {
         const data = await response.json();
         console.log(data.message);
-        // --- CRUCIAL: Pass the unique filename to the chat page via state ---
+
         navigate("/chat", {
           replace: true,
           state: {
-            uploadedFilename: data.uploadedFilename, // Get from backend response
-            originalFileName: data.originalFileName, // Get from backend response
+            uploadedFilename: data.cloudinaryUrl,
+            originalFileName: data.originalFileName,
           },
         });
-        // --- END CRUCIAL ---
       } else {
         const errorData = await response.json();
         setError(errorData.message || "File upload failed.");
