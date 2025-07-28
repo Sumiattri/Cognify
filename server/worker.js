@@ -53,7 +53,6 @@ const worker = new Worker(
         );
       }
       console.log("CLOUDINARY URL:", data.cloudinaryUrl);
-      n;
       console.log("Loading PDF from path:", data.path);
       //Load the pdf
       // const loader = new PDFLoader(data.path);
