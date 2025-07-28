@@ -6,17 +6,14 @@ import IORedis from "ioredis";
 import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf";
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { InferenceClient } from "@huggingface/inference";
-import path from "path";
-import { fileURLToPath } from "url";
-
 import cloudinary from "./cloudinaryConfig.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-
 import dotenv from "dotenv";
+
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const app = express();
+app.use(cors());
 
 const HF_API_KEY = process.env.HF_API_KEY;
 const hf = new InferenceClient(HF_API_KEY);
@@ -30,66 +27,23 @@ const connection = new IORedis({
 
 const queue = new Queue("file-upload-queue", { connection });
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, "uploads/");
-//   },
-//   filename: function (req, file, cb) {
-//     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-//     cb(null, `${uniqueSuffix}-${file.originalname}`);
-//   },
-// });
-
-// const upload = multer({ storage: storage });
-
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "NotebookLM_PDFs",
     allowed_formats: ["pdf"],
-    resource_type: "raw", // important for non-image files
+    resource_type: "raw",
   },
 });
 
 const upload = multer({ storage });
 
-const app = express();
-app.use(cors());
-
-// Serve static files from the 'uploads' directory ---
-// This makes files in 'uploads/' accessible via 'http://localhost:8000/pdfs/your-unique-filename.pdf'
-// app.use("/pdfs", express.static(path.join(__dirname, "uploads")));
-
-app.get("/", (req, res) => {
-  return res.json({ status: "All Good" });
-});
-
-// app.post("/upload/pdf", upload.single("pdf"), async (req, res, next) => {
-//   if (!req.file) {
-//     return res.status(400).json({ message: "No PDF file uploaded." });
-//   }
-
-//   await queue.add(
-//     "file-ready",
-//     JSON.stringify({
-//       filename: req.file.originalname,
-//       destination: req.file.destination,
-//       path: req.file.path,
-//     })
-//   );
-//   return res.json({
-//     message: "file uploaded",
-//     uploadedFilename: req.file.filename, // <--- THIS IS THE UNIQUE FILENAME
-//     originalFileName: req.file.originalname, // <--- OPTIONAL: original name for display
-//   });
-// });
-
 app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
   if (!req.file || !req.file.path) {
     return res.status(400).json({ message: "Upload failed." });
   }
-
   const fileUrl = req.file.path;
+  console.log(fileUrl);
 
   await queue.add(
     "file-ready",
@@ -98,7 +52,6 @@ app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
       cloudinaryUrl: fileUrl,
     })
   );
-
   return res.json({
     message: "File uploaded to Cloudinary",
     cloudinaryUrl: fileUrl,
@@ -149,4 +102,9 @@ app.get("/chat", async (req, res) => {
   });
 });
 
-app.listen(8000, () => console.log(`Server started at PORT ${8000}`));
+app.get("/", (req, res) => {
+  return res.json({ status: "All Good" });
+});
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => console.log(`Server started at PORT ${PORT}`));

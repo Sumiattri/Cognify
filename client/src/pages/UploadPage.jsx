@@ -22,7 +22,6 @@ function UploadPage() {
 
     const formData = new FormData();
     formData.append("pdf", selectedFile);
-
     try {
       const response = await fetch(
         "https://notebooklm-6hyr.onrender.com/upload/pdf",
