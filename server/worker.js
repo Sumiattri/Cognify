@@ -129,6 +129,8 @@ const connection = new IORedis({
   port: process.env.REDIS_PORT,
   password: process.env.REDIS_PASSWORD,
   tls: {},
+  // --- FIX: Add maxRetriesPerRequest: null as required by BullMQ ---
+  maxRetriesPerRequest: null,
 });
 
 const worker = new Worker(
