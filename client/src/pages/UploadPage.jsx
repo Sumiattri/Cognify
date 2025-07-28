@@ -34,7 +34,7 @@ function UploadPage() {
       if (response.ok) {
         const data = await response.json();
         console.log(data.message);
-
+        localStorage.setItem("chatHistory", JSON.stringify(""));
         navigate("/chat", {
           replace: true,
           state: {
