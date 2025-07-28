@@ -109,7 +109,6 @@ app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
 
 app.get("/chat", async (req, res) => {
   const userQuery = req.query.message;
-  // const userQuery = "who is this resume about?";
 
   const embeddings = new HuggingFaceInferenceEmbeddings({
     model: "sentence-transformers/all-MiniLM-L6-v2",

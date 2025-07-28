@@ -23,17 +23,17 @@ const worker = new Worker(
       console.log("Job started:", job.data);
       const data = JSON.parse(job.data);
 
-      const QDRANT_URL = "http://localhost:6333";
       const COLLECTION_NAME = "langchainjs-testing";
 
-      const qdrantClient = new QdrantClient({ host: "localhost", port: 6333 });
+      const qdrantClient = new QdrantClient({
+        url: process.env.QDRANT_URL,
+        apiKey: process.env.QDRANT_API_KEY,
+      });
 
       console.log(
         `Checking and deleting existing collection: ${COLLECTION_NAME}`
       );
       try {
-        // Use the correct method for deleting a collection
-        // Check if the collection exists first to avoid error if it's already gone
         const { collections } = await qdrantClient.getCollections();
         const collectionExists = collections.some(
           (col) => col.name === COLLECTION_NAME
@@ -70,8 +70,9 @@ const worker = new Worker(
       const vectorStore = await QdrantVectorStore.fromExistingCollection(
         embeddings,
         {
-          url: "http://localhost:6333",
+          url: process.env.QDRANT_URL,
           collectionName: "langchainjs-testing",
+          apiKey: process.env.QDRANT_API_KEY,
         }
       );
       await vectorStore.addDocuments(docs);
