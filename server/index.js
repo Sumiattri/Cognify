@@ -89,7 +89,6 @@ app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
     return res.status(400).json({ message: "Upload failed." });
   }
 
-  // This is your Cloudinary file URL
   const fileUrl = req.file.path;
 
   await queue.add(
