@@ -1,10 +1,4 @@
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-  SignUp,
-} from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignUp } from "@clerk/clerk-react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
