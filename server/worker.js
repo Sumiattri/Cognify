@@ -1,13 +1,20 @@
 import { Worker } from "bullmq";
-// import { OpenAIEmbeddings } from "@langchain/openai";
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { QdrantClient } from "@qdrant/qdrant-js";
+import IORedis from "ioredis";
 
 import dotenv from "dotenv";
 dotenv.config();
 const HF_API_KEY = process.env.HF_API_KEY;
+
+const connection = new IORedis({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+  tls: {},
+});
 
 const worker = new Worker(
   "file-upload-queue",
@@ -78,10 +85,7 @@ const worker = new Worker(
   },
   {
     concurrency: 100,
-    connection: {
-      host: "localhost",
-      port: "6379",
-    },
+    connection,
   }
 );
 

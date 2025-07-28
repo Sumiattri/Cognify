@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import { Queue } from "bullmq";
+import IORedis from "ioredis";
 import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf";
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { InferenceClient } from "@huggingface/inference";
@@ -20,12 +21,14 @@ const __dirname = path.dirname(__filename);
 const HF_API_KEY = process.env.HF_API_KEY;
 const hf = new InferenceClient(HF_API_KEY);
 
-const queue = new Queue("file-upload-queue", {
-  connection: {
-    host: "localhost",
-    port: "6379",
-  },
+const connection = new IORedis({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,
+  tls: {},
 });
+
+const queue = new Queue("file-upload-queue", { connection });
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
