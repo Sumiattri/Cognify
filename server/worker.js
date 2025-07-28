@@ -15,6 +15,8 @@ const connection = new IORedis({
   port: process.env.REDIS_PORT,
   password: process.env.REDIS_PASSWORD,
   tls: {},
+  maxRetriesPerRequest: null, // ✅ Required by BullMQ
+  enableReadyCheck: false,
 });
 
 const worker = new Worker(
