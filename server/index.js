@@ -118,8 +118,9 @@ app.get("/chat", async (req, res) => {
   const vectorStore = await QdrantVectorStore.fromExistingCollection(
     embeddings,
     {
-      url: "http://localhost:6333",
+      url: process.env.QDRANT_URL,
       collectionName: "langchainjs-testing",
+      apiKey: process.env.QDRANT_API_KEY,
     }
   );
   const retriever = vectorStore.asRetriever({
