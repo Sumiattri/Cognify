@@ -4,9 +4,7 @@ import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/
 // import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { QdrantClient } from "@qdrant/qdrant-js";
 import IORedis from "ioredis";
-// import { WebPDFLoader } from "langchain/document_loaders/web/pdf";
-import * as LoaderModule from "@langchain/community/document_loaders/web/pdf";
-console.log("Exported module keys:", Object.keys(LoaderModule));
+import { PDFLoader } from "@langchain/community/document_loaders/web/pdf";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -56,8 +54,9 @@ const worker = new Worker(
       }
       console.log("CLOUDINARY URL:", data.cloudinaryUrl);
       console.log("Loading PDF from path:", data.path);
-
-      const loader = new WebPDFLoader(data.cloudinaryUrl);
+      //Load the pdf
+      // const loader = new PDFLoader(data.path);
+      const loader = new PDFLoader(data.cloudinaryUrl);
 
       const docs = await loader.load();
       console.log(`Loaded ${docs.length} documents from PDF`);
