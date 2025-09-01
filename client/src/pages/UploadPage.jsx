@@ -14,7 +14,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileDropdown from "@/components/ProfileDropdown";
 
-function UploadPage2({ onNext }) {
+function UploadPage({ onNext }) {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -329,4 +329,4 @@ function UploadPage2({ onNext }) {
   );
 }
 
-export default UploadPage2;
+export default UploadPage;

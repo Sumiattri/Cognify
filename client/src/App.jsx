@@ -7,7 +7,7 @@ import {
 
 import ChatPage from "./pages/ChatPage";
 import LandingPage from "./pages/LandingPage";
-import UploadPage2 from "./pages/UploadPage2";
+import UploadPage from "./pages/UploadPage";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 
 const router = createBrowserRouter(
@@ -19,7 +19,7 @@ const router = createBrowserRouter(
         path="/uploadpage"
         element={
           <ProtectedRoute>
-            <UploadPage2 />
+            <UploadPage />
           </ProtectedRoute>
         }
       />
