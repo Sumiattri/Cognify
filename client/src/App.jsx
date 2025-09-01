@@ -9,14 +9,32 @@ import {
 import UploadPage from "./pages/UploadPage";
 import RootLayout from "./layouts/RootLayout";
 import ChatPage from "./pages/ChatPage";
+import LandingPage from "./pages/LandingPage";
+import UploadPage2 from "./pages/UploadPage2";
+import ProtectedRoute from "./routes/ProtectedRoutes";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<RootLayout />}>
-        <Route index element={<UploadPage />} />
-        <Route path="/chat" element={<ChatPage />} />
-      </Route>
+      <Route path="/" element={<LandingPage />} />
+
+      <Route
+        path="/uploadpage"
+        element={
+          <ProtectedRoute>
+            <UploadPage2 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/chat"
+        element={
+          <ProtectedRoute>
+            <ChatPage />
+          </ProtectedRoute>
+        }
+      />
     </>
   )
 );
@@ -24,15 +42,7 @@ const router = createBrowserRouter(
 function App() {
   return (
     <>
-      <SignedOut>
-        <section className="h-screen w-screen flex items-center justify-center font-inter bg-gray-50">
-          <SignUp />
-        </section>
-      </SignedOut>
-
-      <SignedIn>
-        <RouterProvider router={router} />
-      </SignedIn>
+      <RouterProvider router={router} />
     </>
   );
 }

@@ -102,23 +102,35 @@ function Chat({ viewerRef }) {
           />
         </div>
       ) : (
-        <div className="relative w-full h-full bg-[#F0F0F5]  ">
+        <div className="relative w-full h-full bg-white  ">
           {isModelOpen && (
             <CloseChatModel
               isModelOpen={isModelOpen}
               setIsModelOpen={setIsModelOpen}
             />
           )}
-          <div className=" absolute top-5 left-6 bg-[#8D51FF] rounded-full p-1 ">
+          {/* <div className=" absolute top-4 left-6 bg-black rounded-full p-1 ">
             <IoCloseOutline
               onClick={handleClick}
               className=" text-3xl text-white cursor-pointer"
             />
-          </div>
+          </div> */}
           {chatHistory.length === 0 ? (
             <div className="w-full h-full  px-5 pt-5 ">
-              <div className=" pl-15 px-2 pt-2 pb-10 text-[#9D28EF] bg-[#FBF5FF] rounded ">
-                <div className="flex gap-2 items-cente ">
+              <div className="sticky top-0 bg-white pt-">
+                <div className="flex justify-between items-center pl-4 pr-2">
+                  <p className="text-[17px]"> Chat</p>
+                  <div className=" a bg-black rounded-full p-1 ">
+                    <IoCloseOutline
+                      onClick={handleClick}
+                      className=" text-[22px] text-white cursor-pointer"
+                    />
+                  </div>
+                </div>
+                <hr className="mt-3" />
+              </div>
+              <div className=" pl-15 px-2 pt-2 pb-10 text-[#9D28EF] bg-[#F0E9EF]  mt-10 rounded-2xl">
+                <div className="flex gap-2 items-center ">
                   <IoDocumentTextOutline className="sm:text-xl text-[17px]" />
                   <h1 className="sm:text-xl  text-[15px] font-semibold">
                     Your Document is ready
@@ -137,17 +149,31 @@ function Chat({ viewerRef }) {
               </div>
             </div>
           ) : (
-            <div className="space-y-3 flex flex-col max-h-[80vh] overflow-y-auto  px-2 py-4    ">
+            <div className="space-y-0 flex flex-col max-h-[80vh] overflow-y-auto  px-2     ">
+              <div className="sticky top-0 bg-white pt-3">
+                <div className="flex justify-between items-center pl-5 pr-2">
+                  <p className="text-[17px]"> Chat</p>
+                  <div className=" a bg-black rounded-full p-1 ">
+                    <IoCloseOutline
+                      onClick={handleClick}
+                      className=" text-[22px] text-white cursor-pointer"
+                    />
+                  </div>
+                </div>
+                <hr className="mt-3" />
+                <div className="h-5 bg-white w-full sticky top-5 "></div>
+              </div>
+
               {chatHistory.map((msg, i) => (
                 <div
                   key={i}
-                  className={`px-4 py-2  rounded-lg ${
+                  className={`px-4 py-3   ${
                     msg.sender === "user"
-                      ? "bg-violet-100 sm:text-[16px] text-[13px] sm:max-w-[90%] max-w-full self-end rounded-l-3xl sm:px-6 "
-                      : "bg-white  sm:text-[16px] text-[13px]  sm:px-10 "
+                      ? "bg-[#EDEFFA] sm:text-[14px] text-[13px] sm:max-w-[90%] max-w-full self-end rounded-l-3xl rounded-tr-lg sm:px-6 "
+                      : "bg-white  sm:text-[14px] text-[13px]  sm:px-5 pt-10 pb-10 rounded-lg"
                   }`}
                 >
-                  <div className="">
+                  <div className=" ">
                     <ReactMarkdown>{msg.text}</ReactMarkdown>
                     {msg.sender === "ai" && msg.metadata?.pageNumber && (
                       <button
@@ -156,9 +182,9 @@ function Chat({ viewerRef }) {
                             msg.metadata.pageNumber - 1
                           )
                         }
-                        className="text-xs text-blue-600 mt-1 underline cursor-pointer hover:scale-105 transition-all duration-200"
+                        className="text-xs text-blue-600 mt-1 underline underline-offset-1 cursor-pointer hover:scale-105 transition-all duration-200 "
                       >
-                        Go to Page {msg.metadata.pageNumber}
+                        Source : Page {msg.metadata.pageNumber}
                       </button>
                     )}
                   </div>
@@ -167,8 +193,12 @@ function Chat({ viewerRef }) {
               {loadingResponse && (
                 <div className="px-4 rounded-lg sm:text-[16px] text-[13px] sm:px-10">
                   <div className="flex justify-start items-center w-full py-6 gap-2">
-                    <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />{" "}
-                    <p>Analyzing....</p>
+                    <div className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-violet-500 animate-bounce [animation-delay:-0.3s]" />
+                      <span className="w-2 h-2 rounded-full bg-violet-500 animate-bounce [animation-delay:-0.15s]" />
+                      <span className="w-2 h-2 rounded-full bg-violet-500 animate-bounce" />
+                    </div>
+                    {/* <p>Analyzing....</p> */}
                   </div>
                 </div>
               )}
@@ -176,7 +206,7 @@ function Chat({ viewerRef }) {
             </div>
           )}
 
-          <div className="flex absolute bottom-3.5 w-full md:px-10 sm:px-5 px-2 sm:gap-5 gap-2 items-center">
+          <div className="flex absolute bottom-3.5 w-full  bg-white pt-2  sm:px-5 px-2 sm:gap-5 gap-2 items-center">
             <Input
               type="text"
               value={message}
@@ -184,14 +214,14 @@ function Chat({ viewerRef }) {
                 setMessage(e.target.value);
               }}
               placeholder="Type your query here"
-              className=" bg-white py-5"
+              className=" bg-white py-6 border-black"
             />
             <Button
               onClick={handleSendChatMessage}
               disabled={!message.trim()}
-              className="bg-violet-500 cursor-pointer py-5 "
+              className="bg-[#A1ABFF] cursor-pointer py-5 "
             >
-              <IoIosSend className="text-5xl my-10" />
+              <IoIosSend className="text-5xl text-white my-10  " />
             </Button>
           </div>
         </div>
