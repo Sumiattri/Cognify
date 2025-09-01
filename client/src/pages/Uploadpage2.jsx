@@ -5,8 +5,6 @@ import {
   ArrowRight,
   X,
   CheckCircle,
-  AlertCircle,
-  Sparkles,
   Zap,
   MessageSquare,
   BookOpen,
