@@ -41,7 +41,7 @@ Cognify is a full-stack web app inspired by Google's NotebookLM. It allows users
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Sumiattri/NotebookLM
+git clone https://github.com/Sumiattri/Cognify
 cd server && npm install
 cd ../client && npm install
 ```
