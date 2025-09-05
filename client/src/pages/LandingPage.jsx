@@ -74,10 +74,11 @@ function LandingPage() {
                 Features
               </a>
               <a
-                href="#pricing"
+                href="#works"
                 className="text-gray-600 hover:text-gray-900 transition-colors hover:underline underline-offset-4"
               >
-                Pricing
+                {/* Pricing */}
+                How Cognify Works
               </a>
               <a
                 href="#help"
@@ -131,10 +132,10 @@ function LandingPage() {
                 <span>Sign in to get Started</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
-              <button className="border border-gray-300 cursor-pointer text-gray-700 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2">
+              {/* <button className="border border-gray-300 cursor-pointer text-gray-700 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2">
                 <Play className="w-5 h-5" />
                 <span className="">Watch Demo</span>
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -302,7 +303,7 @@ function LandingPage() {
       </section>
 
       {/* How it Works Section */}
-      <section className="py-24 bg-gray-50">
+      <section id="works" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
@@ -360,7 +361,7 @@ function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-white">
+      {/* <section id="pricing" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
@@ -372,7 +373,7 @@ function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Free Plan */}
+           
             <div className="bg-white rounded-2xl border-2 border-gray-200 p-8">
               <h3 className="text-2xl font-semibold text-gray-900 mb-2">
                 Free
@@ -401,7 +402,7 @@ function LandingPage() {
               </button>
             </div>
 
-            {/* Pro Plan */}
+          
             <div className="bg-white rounded-2xl border-2 border-blue-500 p-8 relative">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
@@ -437,7 +438,7 @@ function LandingPage() {
               </button>
             </div>
 
-            {/* Enterprise Plan */}
+           
             <div className="bg-white rounded-2xl border-2 border-gray-200 p-8">
               <h3 className="text-2xl font-semibold text-gray-900 mb-2">
                 Enterprise
@@ -470,7 +471,7 @@ function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
@@ -482,8 +483,14 @@ function LandingPage() {
             Join thousands of researchers, students, and professionals who are
             already using Cognify to accelerate their work.
           </p>
-          <button className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-all duration-200 hover:shadow-lg hover:scale-105 inline-flex items-center space-x-2">
-            <span>Start Your Free Trial</span>
+          <button
+            onClick={() => {
+              handleLogin();
+            }}
+            className="bg-white cursor-pointer text-blue-600 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-all duration-200 hover:shadow-lg hover:scale-105 inline-flex items-center space-x-2"
+          >
+            {/* <span>Start Your Free Trial</span> */}
+            <span>Sign in to get started</span>
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>
