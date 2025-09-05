@@ -1,6 +1,6 @@
-# 📚 NotebookLM
+# 📚 Cognify
 
-NotebookLM is a full-stack web app inspired by Google's NotebookLM. It allows users to upload PDFs, process them using LangChain and HuggingFace embeddings, store and retrieve vector representations using Qdrant, and chat with the document using an AI model powered by the HugingFace API.
+Cognify is a full-stack web app inspired by Google's NotebookLM. It allows users to upload PDFs, process them using LangChain and HuggingFace embeddings, store and retrieve vector representations using Qdrant, and chat with the document using an AI model powered by the HugingFace API.
 
 ---
 
@@ -41,7 +41,7 @@ NotebookLM is a full-stack web app inspired by Google's NotebookLM. It allows us
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Sumiattri/NotebookLM
+git clone https://github.com/Sumiattri/Cognify
 cd server && npm install
 cd ../client && npm install
 ```
