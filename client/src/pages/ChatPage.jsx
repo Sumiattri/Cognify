@@ -24,8 +24,8 @@ function ChatPage() {
 
   return (
     <div className="min-h-screen bg-[#EDEFFA]">
-      <nav className=" sticky top-0 bg-[#EDEFFA]  z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className=" sticky top-0 bg-[#EDEFFA]  z-50 ">
+        <div className="max-w-8xl  mx-auto px-4  sm:px-6 lg:px-8 lg:pr-10">
           <div className="flex justify-between items-center py-3">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
@@ -39,7 +39,7 @@ function ChatPage() {
           </div>
         </div>
       </nav>
-      <div className="h-[91vh]  relative z-10 flex border gap-5 px-5 py-5 ">
+      <div className="h-[91vh]  relative z-10 flex border gap-5 px-5 py-1 ">
         <div className="sm:w-[50%] w-[100%] rounded-2xl   overflow-clip  h-full">
           <Chat viewerRef={viewerRef} />
         </div>
