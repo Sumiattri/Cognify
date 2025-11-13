@@ -67,9 +67,6 @@ app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
 app.get("/chat", async (req, res) => {
   try {
     const userQuery = req.query.message;
-    if (!userQuery) {
-      return res.status(400).json({ message: "Message query missing." });
-    }
 
     const embeddings = new HuggingFaceInferenceEmbeddings({
       model: "sentence-transformers/all-MiniLM-L6-v2",
@@ -88,32 +85,41 @@ app.get("/chat", async (req, res) => {
     const retriever = vectorStore.asRetriever({ k: 2 });
     const result = await retriever.invoke(userQuery);
 
-    const SYSTEM_PROMPT = `You are a helpful AI Assistant.
-Use only the information in the provided context.
+    const SYSTEM_PROMPT = `You are a helpful AI Assistant. Use only the information in the provided context.
 
 Context:
 ${JSON.stringify(result, null, 2)}
 `;
 
-    const response = await hf.textGeneration({
-      model: "mistralai/Mistral-7B-Instruct-v0.1",
-      inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
-      parameters: {
-        max_new_tokens: 200,
-        temperature: 0.2,
-      },
-    });
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${HF_API_KEY}`,
+        },
+        body: JSON.stringify({
+          inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
+          parameters: {
+            max_new_tokens: 200,
+            temperature: 0.2,
+          },
+        }),
+      }
+    );
 
-    const aiMessage = response[0]?.generated_text?.trim() || "No response.";
+    const data = await response.json();
 
     return res.json({
-      message: aiMessage,
+      message: data[0]?.generated_text || "No response.",
       docs: result,
     });
   } catch (err) {
-    return res.status(500).json({
-      message: "Server error. HF model could not be reached.",
-    });
+    console.error("CHAT ERROR:", err);
+    return res
+      .status(500)
+      .json({ message: "Server error. HF model could not be reached." });
   }
 });
 
