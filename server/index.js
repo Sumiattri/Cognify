@@ -86,20 +86,23 @@ app.get("/chat", async (req, res) => {
 
     const SYSTEM_PROMPT = `Context:\n${JSON.stringify(result)}`;
 
-    const hfResponse = await fetch(
-      "https://router.huggingface.co/hf-inference/mistralai/Mistral-7B-Instruct-v0.1",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${HF_API_KEY}`,
+    const HF_URL =
+      "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.1";
+
+    const hfResponse = await fetch(HF_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${HF_API_KEY}`,
+      },
+      body: JSON.stringify({
+        inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
+        parameters: {
+          max_new_tokens: 200,
+          temperature: 0.2,
         },
-        body: JSON.stringify({
-          inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
-          parameters: { max_new_tokens: 200, temperature: 0.2 },
-        }),
-      }
-    );
+      }),
+    });
 
     const text = await hfResponse.text();
     console.log("HF RAW RESPONSE:", text);
