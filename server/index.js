@@ -84,12 +84,10 @@ app.get("/chat", async (req, res) => {
     const retriever = vectorStore.asRetriever({ k: 2 });
     const result = await retriever.invoke(userQuery);
 
-    const SYSTEM_PROMPT = `Context:
-${JSON.stringify(result)}
-`;
+    const SYSTEM_PROMPT = `Context:\n${JSON.stringify(result)}`;
 
     const hfResponse = await fetch(
-      "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.1",
+      "https://router.huggingface.co/hf-inference/mistralai/Mistral-7B-Instruct-v0.1",
       {
         method: "POST",
         headers: {
@@ -117,7 +115,7 @@ ${JSON.stringify(result)}
     }
 
     return res.json({
-      message: data[0]?.generated_text || "No response.",
+      message: data.generated_text || data[0]?.generated_text || "No response.",
       docs: result,
     });
   } catch (err) {
