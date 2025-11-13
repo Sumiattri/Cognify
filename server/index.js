@@ -67,6 +67,7 @@ app.get("/chat", async (req, res) => {
   try {
     const userQuery = req.query.message;
 
+    // Vector Search
     const embeddings = new HuggingFaceInferenceEmbeddings({
       model: "sentence-transformers/all-MiniLM-L6-v2",
       apiKey: HF_API_KEY,
@@ -84,10 +85,12 @@ app.get("/chat", async (req, res) => {
     const retriever = vectorStore.asRetriever({ k: 2 });
     const result = await retriever.invoke(userQuery);
 
+    // Prompt
     const SYSTEM_PROMPT = `Context:\n${JSON.stringify(result)}`;
 
+    // FREE MODEL (Works reliably)
     const HF_URL =
-      "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.1";
+      "https://router.huggingface.co/hf-inference/HuggingFaceH4/zephyr-7b-beta";
 
     const hfResponse = await fetch(HF_URL, {
       method: "POST",
@@ -99,7 +102,7 @@ app.get("/chat", async (req, res) => {
         inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
         parameters: {
           max_new_tokens: 200,
-          temperature: 0.2,
+          temperature: 0.25,
         },
       }),
     });
