@@ -91,7 +91,7 @@ app.get("/chat", async (req, res) => {
     // FREE MODEL (Works reliably)
     const HF_URL =
       "https://router.huggingface.co/mistralai/Mistral-7B-Instruct-v0.1";
-
+    console.log("CALLING HF URL:", HF_URL);
     const hfResponse = await fetch(HF_URL, {
       method: "POST",
       headers: {
