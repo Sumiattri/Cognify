@@ -89,8 +89,7 @@ app.get("/chat", async (req, res) => {
     const SYSTEM_PROMPT = `Context:\n${JSON.stringify(result)}`;
 
     // FREE MODEL (Works reliably)
-    const HF_URL =
-      "https://router.huggingface.co/mistralai/Mistral-7B-Instruct-v0.1";
+    const HF_URL = "https://router.huggingface.co/tiiuae/falcon-7b-instruct";
     console.log("CALLING HF URL:", HF_URL);
     const hfResponse = await fetch(HF_URL, {
       method: "POST",
