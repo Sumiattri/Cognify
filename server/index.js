@@ -90,6 +90,7 @@ app.get("/chat", async (req, res) => {
 
   const chatResult = await hf.chatCompletion({
     model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    provider: "hf-inference",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: userQuery },
