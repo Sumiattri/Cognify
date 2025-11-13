@@ -90,7 +90,7 @@ app.get("/chat", async (req, res) => {
 
     // FREE MODEL (Works reliably)
     const HF_URL =
-      "https://router.huggingface.co/hf-inference/HuggingFaceH4/zephyr-7b-beta";
+      "https://router.huggingface.co/mistralai/Mistral-7B-Instruct-v0.1";
 
     const hfResponse = await fetch(HF_URL, {
       method: "POST",
@@ -102,7 +102,7 @@ app.get("/chat", async (req, res) => {
         inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
         parameters: {
           max_new_tokens: 200,
-          temperature: 0.25,
+          temperature: 0.2,
         },
       }),
     });
