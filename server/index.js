@@ -67,9 +67,10 @@ app.get("/chat", async (req, res) => {
   try {
     const userQuery = req.query.message;
 
+    // Vector search with HF embeddings
     const embeddings = new HuggingFaceInferenceEmbeddings({
       model: "sentence-transformers/all-MiniLM-L6-v2",
-      apiKey: process.env.HF_API_KEY,
+      apiKey: HF_API_KEY,
     });
 
     const vectorStore = await QdrantVectorStore.fromExistingCollection(
@@ -81,41 +82,50 @@ app.get("/chat", async (req, res) => {
       }
     );
 
-    const retriever = vectorStore.asRetriever({ k: 2 });
+    const retriever = vectorStore.asRetriever({ k: 3 });
     const result = await retriever.invoke(userQuery);
 
-    const SYSTEM_PROMPT = `Context:\n${JSON.stringify(result)}
-User: ${userQuery}
-Assistant:`;
+    const context = JSON.stringify(result);
 
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-    const geminiResponse = await fetch(GEMINI_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: SYSTEM_PROMPT }],
-          },
-        ],
-      }),
-    });
+    const geminiResponse = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
+        GEMINI_API_KEY,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: `Context: ${context}\n\nUser Query: ${userQuery}\n\nAnswer in a short concise way:`,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
-    const data = await geminiResponse.json();
+    const json = await geminiResponse.json();
+    console.log("GEMINI RAW:", json);
 
-    if (!data || !data.candidates || !data.candidates[0]) {
+    if (!json.candidates || !json.candidates[0]) {
       return res.status(500).json({
         message: "Gemini returned no response.",
-        raw: data,
+        raw: json,
       });
     }
 
-    const text =
-      data.candidates[0].content.parts[0].text || "No response generated.";
+    const msg = json.candidates[0].content.parts[0].text;
 
     return res.json({
-      message: text,
+      message: msg,
       docs: result,
     });
   } catch (err) {
