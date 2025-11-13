@@ -85,13 +85,11 @@ app.get("/chat", async (req, res) => {
     const retriever = vectorStore.asRetriever({ k: 2 });
     const result = await retriever.invoke(userQuery);
 
-    const SYSTEM_PROMPT = `You are a helpful AI Assistant. Use only the information in the provided context.
-
-Context:
-${JSON.stringify(result, null, 2)}
+    const SYSTEM_PROMPT = `Context:
+${JSON.stringify(result)}
 `;
 
-    const response = await fetch(
+    const hfResponse = await fetch(
       "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1",
       {
         method: "POST",
@@ -101,15 +99,24 @@ ${JSON.stringify(result, null, 2)}
         },
         body: JSON.stringify({
           inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
-          parameters: {
-            max_new_tokens: 200,
-            temperature: 0.2,
-          },
+          parameters: { max_new_tokens: 200, temperature: 0.2 },
         }),
       }
     );
 
-    const data = await response.json();
+    const text = await hfResponse.text();
+
+    console.log("HF RAW RESPONSE:", text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return res.status(500).json({
+        message: "HF returned non-JSON response.",
+        raw: text,
+      });
+    }
 
     return res.json({
       message: data[0]?.generated_text || "No response.",
@@ -117,9 +124,9 @@ ${JSON.stringify(result, null, 2)}
     });
   } catch (err) {
     console.error("CHAT ERROR:", err);
-    return res
-      .status(500)
-      .json({ message: "Server error. HF model could not be reached." });
+    return res.status(500).json({
+      message: "Server error. HF model not reachable.",
+    });
   }
 });
 
