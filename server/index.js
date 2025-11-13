@@ -89,7 +89,7 @@ app.get("/chat", async (req, res) => {
   const inputText = `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAI:`;
 
   const chatResult = await hf.chatCompletion({
-    model: "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    model: "HuggingFaceH4/zephyr-7b-beta",
     provider: "hf-inference",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
