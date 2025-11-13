@@ -15,7 +15,8 @@ dotenv.config();
 const app = express();
 app.use(cors());
 
-const GEMINI_KEY = process.env.Gemini_Api_Key;
+const HF_API_KEY = process.env.HF_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const connection = new IORedis({
   host: process.env.REDIS_HOST,
@@ -37,25 +38,24 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
+// ----------------------- UPLOAD PDF -----------------------
 app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
   try {
     if (!req.file || !req.file.path) {
       return res.status(400).json({ message: "Upload failed." });
     }
 
-    const fileUrl = req.file.path;
-
     await queue.add(
       "file-ready",
       JSON.stringify({
         originalFileName: req.file.originalname,
-        cloudinaryUrl: fileUrl,
+        cloudinaryUrl: req.file.path,
       })
     );
 
     return res.json({
       message: "File uploaded to Cloudinary",
-      cloudinaryUrl: fileUrl,
+      cloudinaryUrl: req.file.path,
       originalFileName: req.file.originalname,
     });
   } catch (err) {
@@ -63,11 +63,12 @@ app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
   }
 });
 
+// ----------------------- CHAT ROUTE -----------------------
 app.get("/chat", async (req, res) => {
   try {
     const userQuery = req.query.message;
 
-    // Vector search with HF embeddings
+    // EMBEDDINGS WITH HF KEY (FIXED)
     const embeddings = new HuggingFaceInferenceEmbeddings({
       model: "sentence-transformers/all-MiniLM-L6-v2",
       apiKey: HF_API_KEY,
@@ -87,23 +88,19 @@ app.get("/chat", async (req, res) => {
 
     const context = JSON.stringify(result);
 
-    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
+    // ---------------- GEMINI CALL ----------------
     const geminiResponse = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-        GEMINI_API_KEY,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [
             {
               role: "user",
               parts: [
                 {
-                  text: `Context: ${context}\n\nUser Query: ${userQuery}\n\nAnswer in a short concise way:`,
+                  text: `Use the following context from the PDF: ${context}\n\nQuestion: ${userQuery}\n\nAnswer clearly and concisely.`,
                 },
               ],
             },
@@ -136,6 +133,7 @@ app.get("/chat", async (req, res) => {
   }
 });
 
+// ----------------------- HEALTH CHECK -----------------------
 app.get("/", (req, res) => {
   return res.json({ status: "All Good" });
 });
