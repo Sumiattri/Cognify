@@ -15,8 +15,10 @@ dotenv.config();
 const app = express();
 app.use(cors());
 
-const HF_API_KEY = process.env.HF_API_KEY;
+const HF_API_KEY = process.env.HF_API_KEY; // ONLY for embeddings
+const GEMINI_API_KEY = process.env.Gemini_Api_Key;
 
+// Redis connection
 const connection = new IORedis({
   host: process.env.REDIS_HOST,
   port: process.env.REDIS_PORT,
@@ -26,6 +28,7 @@ const connection = new IORedis({
 
 const queue = new Queue("file-upload-queue", { connection });
 
+// Cloudinary Upload
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
@@ -34,12 +37,12 @@ const storage = new CloudinaryStorage({
     resource_type: "raw",
   },
 });
-
 const upload = multer({ storage });
 
+// Upload Route
 app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
   try {
-    if (!req.file || !req.file.path) {
+    if (!req.file?.path) {
       return res.status(400).json({ message: "Upload failed." });
     }
 
@@ -63,11 +66,12 @@ app.post("/upload/pdf", upload.single("pdf"), async (req, res) => {
   }
 });
 
+// Chat Route (Gemini)
 app.get("/chat", async (req, res) => {
   try {
     const userQuery = req.query.message;
 
-    // Vector Search
+    // 1️⃣ VECTOR SEARCH (same as before)
     const embeddings = new HuggingFaceInferenceEmbeddings({
       model: "sentence-transformers/all-MiniLM-L6-v2",
       apiKey: HF_API_KEY,
@@ -85,56 +89,54 @@ app.get("/chat", async (req, res) => {
     const retriever = vectorStore.asRetriever({ k: 2 });
     const result = await retriever.invoke(userQuery);
 
-    // Prompt
-    const SYSTEM_PROMPT = `Context:\n${JSON.stringify(result)}`;
+    // 2️⃣ BUILD PROMPT
+    const SYSTEM_PROMPT = `
+Use the following PDF context to answer the user question.
 
-    // FREE MODEL (Works reliably)
-    const HF_URL =
-      "https://api-inference.huggingface.co/models/google/gemma-2b-it";
-    console.log("CALLING HF URL:", HF_URL);
-    const hfResponse = await fetch(HF_URL, {
+Context:
+${JSON.stringify(result)}
+
+User: ${userQuery}
+Assistant:
+`;
+
+    // 3️⃣ CALL GEMINI
+    const geminiURL =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
+      GEMINI_API_KEY;
+
+    const geminiRes = await fetch(geminiURL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${HF_API_KEY}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
-        parameters: {
-          max_new_tokens: 200,
-          temperature: 0.2,
-        },
+        contents: [
+          {
+            parts: [{ text: SYSTEM_PROMPT }],
+          },
+        ],
       }),
     });
 
-    const text = await hfResponse.text();
-    console.log("HF RAW RESPONSE:", text);
+    const data = await geminiRes.json();
 
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return res.status(500).json({
-        message: "HF returned non-JSON response.",
-        raw: text,
-      });
-    }
+    console.log("GEMINI RAW:", data);
+
+    const answer =
+      data.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
 
     return res.json({
-      message: data.generated_text || data[0]?.generated_text || "No response.",
+      message: answer,
       docs: result,
     });
   } catch (err) {
     console.error("CHAT ERROR:", err);
     return res.status(500).json({
-      message: "Server error. HF model not reachable.",
+      message: "Server error. Gemini model failed.",
     });
   }
 });
 
-app.get("/", (req, res) => {
-  return res.json({ status: "All Good" });
-});
+app.get("/", (req, res) => res.json({ status: "All Good" }));
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server started at PORT ${PORT}`));
