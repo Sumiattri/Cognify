@@ -1,11 +1,11 @@
 import express from "express";
 import cors from "cors";
 import multer from "multer";
+import fetch from "node-fetch";
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
 import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf";
 import { QdrantVectorStore } from "@langchain/qdrant";
-import { InferenceClient } from "@huggingface/inference";
 import cloudinary from "./cloudinaryConfig.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import dotenv from "dotenv";
@@ -16,7 +16,6 @@ const app = express();
 app.use(cors());
 
 const HF_API_KEY = process.env.HF_API_KEY;
-const hf = new InferenceClient(HF_API_KEY);
 
 const connection = new IORedis({
   host: process.env.REDIS_HOST,
@@ -105,7 +104,6 @@ ${JSON.stringify(result)}
     );
 
     const text = await hfResponse.text();
-
     console.log("HF RAW RESPONSE:", text);
 
     let data;
