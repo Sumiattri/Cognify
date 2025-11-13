@@ -88,17 +88,17 @@ app.get("/chat", async (req, res) => {
 
   const inputText = `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAI:`;
 
-  const chatResult = await hf.chatCompletion({
-    model: "HuggingFaceH4/zephyr-7b-beta",
-    provider: "hf-inference",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userQuery },
-    ],
+  const output = await hf.textGeneration({
+    model: "mistralai/Mistral-7B-Instruct-v0.1",
+    inputs: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
+    parameters: {
+      max_new_tokens: 200,
+      temperature: 0.2,
+    },
   });
 
   return res.json({
-    message: chatResult.choices[0].message.content,
+    message: output.generated_text,
     docs: result,
   });
 });
