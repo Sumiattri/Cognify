@@ -4,7 +4,7 @@ import multer from "multer";
 import fetch from "node-fetch";
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
-import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
+import { HuggingFaceInferenceEmbeddings } from "@langchain/community/embeddings/hf";
 import { QdrantVectorStore } from "@langchain/qdrant";
 import cloudinary from "./cloudinaryConfig.js";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
@@ -14,6 +14,8 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+
+const GEMINI_KEY = process.env.Gemini_Api_Key;
 
 const connection = new IORedis({
   host: process.env.REDIS_HOST,
@@ -65,8 +67,9 @@ app.get("/chat", async (req, res) => {
   try {
     const userQuery = req.query.message;
 
-    const embeddings = new HuggingFaceTransformersEmbeddings({
-      modelName: "sentence-transformers/all-MiniLM-L6-v2",
+    const embeddings = new HuggingFaceInferenceEmbeddings({
+      model: "sentence-transformers/all-MiniLM-L6-v2",
+      apiKey: process.env.HF_API_KEY,
     });
 
     const vectorStore = await QdrantVectorStore.fromExistingCollection(
@@ -78,40 +81,45 @@ app.get("/chat", async (req, res) => {
       }
     );
 
-    const retriever = vectorStore.asRetriever({ k: 3 });
+    const retriever = vectorStore.asRetriever({ k: 2 });
     const result = await retriever.invoke(userQuery);
 
-    const SYSTEM_PROMPT = `Use the following context only:\n${JSON.stringify(
-      result
-    )}`;
+    const SYSTEM_PROMPT = `Context:\n${JSON.stringify(result)}
+User: ${userQuery}
+Assistant:`;
 
-    const geminiResp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `${SYSTEM_PROMPT}\nUser: ${userQuery}\nAssistant:`,
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`;
 
-    const data = await geminiResp.json();
+    const geminiResponse = await fetch(GEMINI_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [{ text: SYSTEM_PROMPT }],
+          },
+        ],
+      }),
+    });
+
+    const data = await geminiResponse.json();
+
+    if (!data || !data.candidates || !data.candidates[0]) {
+      return res.status(500).json({
+        message: "Gemini returned no response.",
+        raw: data,
+      });
+    }
+
+    const text =
+      data.candidates[0].content.parts[0].text || "No response generated.";
 
     return res.json({
-      message:
-        data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response.",
+      message: text,
       docs: result,
     });
   } catch (err) {
+    console.error("CHAT ERROR:", err);
     return res.status(500).json({
       message: "Server error. Gemini model failed.",
     });
